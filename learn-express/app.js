@@ -43,10 +43,26 @@ try {
 // dotenv
 dotenv.config();
 
+// 라우터 가져오기
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+
+
 // express 모듈을 실행해서 app 변수에 할당하기
 const app = express();
 // app.set('port', 포트)로 서버가 실행될 포트를 설정한다.
 app.set('port', process.env.PORT || 3000);
+
+
+// 없는 라우트에 접근할 경우 에러를 처리할 에러처리 미들웨어
+// 이 라우터가 없다면 자체 내장 에러 처리 문구를 보여준다.
+app.use((req,res,next)=>{
+  res.status(404).send('Not Found');
+});
+
+// 라우터 사용하기
+app.use('/',indexRouter);
+app.use('/user', usersRouter);
 
 // 미들웨어 패키지들 사용해보기
 // app.use(morgan('dev')); // 로그를 콘솔에 찍는 미들웨어
@@ -89,10 +105,11 @@ app.use(
 );
 
 // 미들웨어 사용해보기
-app.use((req, res, next) => {
-  console.log('모든 요청에서 실행된다.');
-  next(); // next를 해야 다음 일을 하기위해 넘어간다.
-});
+// app.use((req, res, next) => {
+//   console.log('모든 요청에서 실행된다.');
+//   next(); // next를 해야 다음 일을 하기위해 넘어간다.
+// });
+
 
 // 미들웨어 간에 데이터 전송하기
 app.use(
@@ -106,18 +123,18 @@ app.use(
   }
 );
 
-app.get(
-  '/',
-  (req, res, next) => {
-    // 미들웨어를 여러개 넣을 수 있다.
-    console.log('GET 요청에서만 실행되는 미들웨어');
-    next(); // next를 꼭 써줘야한다.
-  },
-  (req, res) => {
-    res.send('hi');
-    // throw new Error('에러는 에러 처리 미들웨어로..'); // err.message
-  }
-);
+// app.get(
+//   '/',
+//   (req, res, next) => {
+//     // 미들웨어를 여러개 넣을 수 있다.
+//     console.log('GET 요청에서만 실행되는 미들웨어');
+//     next(); // next를 꼭 써줘야한다.
+//   },
+//   (req, res) => {
+//     res.send('hi');
+//     // throw new Error('에러는 에러 처리 미들웨어로..'); // err.message
+//   }
+// );
 
 // upload 관련 라우터
 // upload.single은 하나 업로드 받을 때
@@ -129,10 +146,13 @@ app.post('/upload',upload.single('image'),(req,res)=>{
 });
 
 // 에러 처리 미들웨어
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).send(err.message);
-});
+// app.use((err, req, res, next) => {
+//   console.error(err);
+//   res.status(500).send(err.message);
+// });
+
+
+
 
 // app.get('port')를 통해서 위에 set에서 저장한 port 값을 가져올 수 있다.
 app.listen(app.get('port'), () => {
