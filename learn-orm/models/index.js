@@ -3,6 +3,7 @@
 const path = require('path');
 // sequelize 패키지
 const Sequelize = require('sequelize');
+const Member = require('./member');
 
 // 개발 모드 환경설정
 const env = process.env.NODE_ENV || 'development';
@@ -20,6 +21,12 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 // 이제부터 db를 통해 데이터베이스를 관리할 수 있다.
 db.sequelize = sequelize; // db객체에 sequelize라는 프로퍼티 추가
 db.Sequelize = Sequelize;
+
+// 만든 모델 가져와서 db에 프로퍼티로 추가하기
+db.Member = Member;
+console.log('member');
+Member.init(sequelize); // super.init을 리턴받기 때문에 실행을 해줘야한다
+// Member.associate(db); // 다른 테이블과 관계 설정
 
 // 만든 db 객체를 exports 한다.
 module.exports = db;
